@@ -1,0 +1,23 @@
+body {
+  font-family: "Microsoft JhengHei", sans-serif;
+  background-color: #f9f9f9;
+  font-size: 20px;
+}
+
+.chat-box {
+  background-color: #ffffff;
+  max-height: 60vh;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+}
+
+.sender {
+  font-weight: bold;
+  color: #555;
+}
+
+.message {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 22px;
+}

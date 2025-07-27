@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>老人聊天機器人</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f9f9f9;
+      font-size: 22px;
+      padding: 20px;
+    }
+    .chat-box {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .message-row {
+      margin-bottom: 16px;
+    }
+    .sender {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .user {
+      color: #1a73e8;
+    }
+    .bot {
+      color: #198754;
+    }
+    form textarea {
+      font-size: 22px;
+      resize: vertical;
+      min-height: 120px; /* 加大輸入框 */
+      width: 100%;
+      max-width: 700px;
+      padding: 12px;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    form button {
+      font-size: 20px;
+      min-width: 120px;
+    }
+    .btn-clear {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+    }
+    .btn-clear:hover {
+      background-color: #a52834;
+      color: white;
+    }
+    @media (max-width: 576px) {
+      body {
+        font-size: 18px;
+        padding: 10px;
+      }
+      form textarea {
+        min-height: 100px;
+        font-size: 18px;
+        max-width: 100%;
+      }
+      form button {
+        min-width: 100px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="text-center mb-4">🧓 老人聊天機器人 🤖</h1>
+
+  {% if cleared_message %}
+    <div class="alert alert-success text-center" role="alert">
+      {{ cleared_message }}
+    </div>
+  {% endif %}
+
+  <div class="chat-box" id="chat-box">
+    {% for sender, message in messages %}
+      <div class="message-row">
+        <span class="sender {{ 'user' if sender == '👤' else 'bot' }}">{{ sender }}</span>
+        <span class="message-text">{{ message }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Form for submitting messages -->
+  <form method="POST" class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center max-w-800 mx-auto">
+    <textarea name="user_message" placeholder="請輸入訊息..." required></textarea>
+    <button type="submit" class="btn btn-primary">送出</button>
+  </form>
+
+  <!-- Separate form for clearing history -->
+  <form method="POST" class="d-flex justify-content-center mt-2">
+    <button type="submit" name="clear" value="1" class="btn btn-clear">清除留言紀錄</button>
+    <button type="button" id="stop-tts" class="btn btn-secondary ms-2">🔇 停止語音</button>
+  </form>
+
+  <script>
+    const synth = window.speechSynthesis;
+
+    function speak(text) {
+      stopSpeech();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "zh-TW";
+      synth.speak(utterance);
+    }
+
+    function stopSpeech() {
+      if (synth.speaking) {
+        synth.cancel();
+      }
+    }
+
+    window.onload = () => {
+      const allMessages = document.querySelectorAll(".message-row");
+      for (let i = allMessages.length - 1; i >= 0; i--) {
+        const row = allMessages[i];
+        const senderSpan = row.querySelector(".sender");
+        if (senderSpan && senderSpan.textContent.trim() === "🤖") {
+          const msgSpan = row.querySelector(".message-text");
+          if (msgSpan) {
+            speak(msgSpan.textContent); // Only speak the message text, not the sender emoji
+          }
+          break;
+        }
+      }
+    };
+
+    document.getElementById("stop-tts").addEventListener("click", () => {
+      stopSpeech();
+    });
+
+    document.querySelector(".btn-clear").addEventListener("click", () => {
+      stopSpeech();
+    });
+  </script>
+</body>
+</html>

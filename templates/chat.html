@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>老人聊天機器人</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f0f8ff;
+      padding: 20px;
+      font-size: 22px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+    }
+
+    .chat-box {
+      width: 80%;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 2px 2px 10px #aaa;
+    }
+
+    .message {
+      margin-bottom: 15px;
+    }
+
+    .user {
+      color: #004085;
+      font-weight: bold;
+    }
+
+    .bot {
+      color: #155724;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      font-size: 26px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .btns {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+    }
+
+    .clear-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .send-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>👵 老人聊天機器人 🤖</h1>
+  <div class="chat-box">
+    {% for m in messages %}
+      <div class="message">
+        {% if m.role == 'user' %}
+          <div class="user">👤 你：{{ m.content }}</div>
+        {% else %}
+          <div class="bot">🤖 機器人：{{ m.content }}</div>
+          <script>
+            const utterance = new SpeechSynthesisUtterance("{{ m.content }}");
+            utterance.lang = "zh-TW";
+            window.speechSynthesis.speak(utterance);
+          </script>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <form method="POST">
+      <input type="text" name="message" placeholder="請輸入..." required autofocus>
+      <div class="btns">
+        <button type="submit" class="send-btn">送出</button>
+        <button type="submit" name="clear" class="clear-btn">清除留言</button>
+
+      </div>
+    </form>
+  </div>
+</body>
+</html>
